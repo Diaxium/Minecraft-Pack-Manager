@@ -1,0 +1,19 @@
+{
+    "name": "minecraft-pack-manager",
+    "version": "1.0.0",
+    "description": "A CLI utility to manage Minecraft mods and snapshots.",
+    "main": "main.js",
+    "type": "module",
+    "scripts": {
+        "start": "node main.js"
+    },
+    "dependencies": {
+        "@inquirer/prompts": "^7.4.0",
+        "ansi-escape-sequences": "^6.2.1",
+        "dotenv": "^16.4.7",
+        "zod": "^3.24.2"
+    },
+    "keywords": [],
+    "author": "Diaxium",
+    "license": "MIT"
+}

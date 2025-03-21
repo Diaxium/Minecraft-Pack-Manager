@@ -271,11 +271,12 @@ const computeSnapshotDiff = async (previousSnapshot, newData = {}) => {
  * Builds a full snapshot report from snapshot data.
  *
  * @param {Object[]} snapshot - The snapshot data.
+ * @param {Object[]} duplicates - The total delete duplicates.
  * @returns {string[]} An array of strings representing the full snapshot report.
  */
-const buildSnapshotContent = (snapshot) => {
+const buildSnapshotContent = (snapshot, duplicates) => {
   const lines = [];
-  lines.push("# Full Snapshot Report", "");
+  lines.push(`# Full Snapshot Report | Added: 0, Removed: 0, Updated: 0, Deleted: ${duplicates.length}`, "");
 
   if (!Array.isArray(snapshot) || snapshot.length === 0) {
     lines.push("No snapshot data available.");
@@ -310,6 +311,28 @@ const buildSnapshotContent = (snapshot) => {
 
     lines.push("");
   });
+
+  lines.push(`## Deleted Duplicates Report | Total Deleted: ${duplicates.length}`, "");
+
+  if (!Array.isArray(duplicates) || duplicates.length === 0) {
+    lines.push("No mods were deleted.");
+  }
+
+  for (const { profile, fileName: name, path, existing } of duplicates) {
+    lines.push(`Profile: ${profile}`);
+    lines.push(`  - Deleted Mod: ${name}`);
+    lines.push(`  - Original Path: ${path}`);
+
+    if (existing) {
+      lines.push(`  - Existing Mod: ${existing.fileName}`);
+      
+      if (existing.details && Object.keys(existing.details).length > 0) {
+        if (existing.details.filePath) lines.push(`    - Path: ${existing.details.filePath}`);
+      }
+    }
+
+    lines.push("");
+  }
 
   return lines;
 };
@@ -420,7 +443,7 @@ const createSnapshot = async (settings, session) => {
     taggedConsole.info(`Changes detected, saving diff snapshot...`);
   } else {
     // If no changes, save the full snapshot.
-    outputLines = buildSnapshotContent(data).join("\n");
+    outputLines = buildSnapshotContent(data, duplicates).join("\n");
     snapshotFileName = `full_snapshot_${new Date().toISOString().replace(/T/, "_").replace(/:/g, "-").split(".")[0]}.txt`;
 
     taggedConsole.info(`No changes detected, saving full snapshot...`);

@@ -74,7 +74,7 @@ const gatherProfileMods = async (profilesPath, profiles, session) => {
                     profile,
                     fileName: file,
                     path: filePath,
-                    existing: allMods.get(file)
+                    existing: { fileName: file, details: allMods.get(file) }
                 });
                 continue;
             }
